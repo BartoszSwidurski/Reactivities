@@ -1,20 +1,21 @@
 import React, { ChangeEvent, useState } from "react";
 import { Button, Form, Segment } from "semantic-ui-react";
-import { Activity } from "../../../app/models/Activity";
-
-interface Props {
-  activity: Activity | undefined;
-  closeForm: () => void;
-  createOrEdit: (activity: Activity) => void;
-}
+import { useStore } from "../../../app/stores/store";
+import { observer } from "mobx-react-lite";
 
 //activity: selectedAcivity - we can use selectedAcivity name to not have duplicate of activity name which is in state
-export default function ActivityForm({
-  closeForm,
-  activity: selectedAcivity,
-  createOrEdit,
-}: Props) {
-  const initialState = selectedAcivity ?? {
+export default observer(function ActivityForm() {
+  const { activityStore } = useStore();
+
+  const {
+    selectedActivity,
+    closeForm,
+    createActivity,
+    updateActivity,
+    loading,
+  } = activityStore;
+
+  const initialState = selectedActivity ?? {
     id: "",
     title: "",
     category: "",
@@ -27,7 +28,7 @@ export default function ActivityForm({
   const [activity, setActivity] = useState(initialState);
 
   function handleSubmit() {
-    createOrEdit(activity);
+    activity.id ? updateActivity(activity) : createActivity(activity);
   }
 
   function handleInputChange(
@@ -62,6 +63,7 @@ export default function ActivityForm({
           placeholder="Date"
           value={activity.date}
           name="date"
+          type="date"
           onChange={handleInputChange}
         />
         <Form.Input
@@ -73,10 +75,16 @@ export default function ActivityForm({
         <Form.Input
           placeholder="Venue"
           value={activity.venue}
-          name="title"
+          name="venue"
           onChange={handleInputChange}
         />
-        <Button floated="right" positive type="submit" content="Submit" />
+        <Button
+          loading={loading}
+          floated="right"
+          positive
+          type="submit"
+          content="Submit"
+        />
         <Button
           onClick={closeForm}
           floated="right"
@@ -86,4 +94,4 @@ export default function ActivityForm({
       </Form>
     </Segment>
   );
-}
+});
