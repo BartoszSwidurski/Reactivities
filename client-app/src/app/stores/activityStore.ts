@@ -18,12 +18,39 @@ export default class ActivityStore {
   }
 
   //ordered by date
+  //Date.parse returns number of ms from 1970
+  // let numbers = [4, 2, 5, 1, 3];
+  // numbers.sort((a, b) => a - b);
+  // console.log(numbers);
+  // Output: [1, 2, 3, 4, 5]
   get activitiesByDate() {
     return Array.from(this.activityRegistry.values()).sort(
       (a, b) => Date.parse(a.date) - Date.parse(b.date)
     );
   }
 
+  //Example Object.entries use:
+  // const obj = { foo: 'bar', baz: 42 };
+  // console.log(Object.entries(obj)); // [ ['foo', 'bar'], ['baz', 42] ]
+  // const array1 = [1, 2, 3, 4];
+  // const reducer = (previousValue, currentValue) => previousValue + currentValue;
+  // 1 + 2 + 3 + 4
+  // expected output: 10
+  // {} as { [key: string]: Activity[] } to jest initial value, pusty obiekt o typie { [key: string]: Activity[] }
+  get groupedActivities() {
+    return Object.entries(
+      this.activitiesByDate.reduce((activities, activity) => {
+        const date = activity.date;
+        //activities[date] get property from activities that matches date
+        activities[date] = activities[date]
+          ? [...activities[date], activity]
+          : [activity];
+        return activities;
+      }, {} as { [key: string]: Activity[] })
+    );
+  }
+
+  // ATTENTION !!!!!
   //   //we need use arrow function since it is using 'this' properties, or otherwise we would need to use action.bound
   //   setTitle = () => {
   //     this.title = this.title + "!";
