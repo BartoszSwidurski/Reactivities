@@ -1,5 +1,9 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { Activity } from "../app/models/Activity";
+import { toast } from "react-toastify";
+//".." is from index.tsx
+import { history } from "..";
+import { store } from "../app/stores/store";
 
 const sleep = (delay: number) => {
   return new Promise((resolve) => {
@@ -9,15 +13,48 @@ const sleep = (delay: number) => {
 
 axios.defaults.baseURL = "http://localhost:5000/api";
 
-axios.interceptors.response.use(async (response) => {
-  try {
+axios.interceptors.response.use(
+  async (response) => {
     await sleep(1000);
     return response;
-  } catch (error) {
-    console.log(error);
-    return await Promise.reject(error);
+  },
+  (error: AxiosError) => {
+    //onRejected code here
+    const { data, status, config } = error.response!;
+    switch (status) {
+      case 400:
+        if (typeof data === "string") {
+          toast.error(data);
+        }
+        if (config.method === "get" && data.errors.hasOwnProperty("id")) {
+          history.push("/not-found");
+        }
+        //This one is both for bad request and validation error so we need to check data.errors
+        if (data.errors) {
+          const modalStateErrors = [];
+          for (const key in data.errors) {
+            if (data.errors[key]) {
+              modalStateErrors.push(data.errors[key]);
+            }
+          }
+          throw modalStateErrors;
+        }
+        break;
+      case 401:
+        toast.error("unauthorized");
+        break;
+      case 404:
+        //agent.ts is not a component, but we need to redirect to url /not-found in case of 404 error
+        history.push("/not-found");
+        break;
+      case 500:
+        store.commonStore.setServerError(data);
+        history.push("/server-error");
+        break;
+    }
+    return Promise.reject(error);
   }
-});
+);
 
 const responseBody = <T>(response: AxiosResponse<T>) => {
   return response.data;

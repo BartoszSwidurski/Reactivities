@@ -5,14 +5,22 @@ import App from "./app/layout/App";
 import reportWebVitals from "./reportWebVitals";
 import "semantic-ui-css/semantic.min.css";
 import { StoreContext, store } from "./app/stores/store";
-import { BrowserRouter } from "react-router-dom";
+import { Router } from "react-router-dom";
 // import "react-calendar/dist/Calendar.css";
+//from react router-dom
+import { createBrowserHistory } from "history";
+
+import "react-toastify/dist/ReactToastify.min.css";
+
+//this will allow to redirect to url from agent.ts which is not component
+export const history = createBrowserHistory();
 
 ReactDOM.render(
   <StoreContext.Provider value={store}>
-    <BrowserRouter>
+    {/* We can use history anywhere in app now */}
+    <Router history={history}>
       <App />
-    </BrowserRouter>
+    </Router>
   </StoreContext.Provider>,
   document.getElementById("root")
 );
