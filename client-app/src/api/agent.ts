@@ -29,7 +29,8 @@ axios.interceptors.response.use(
         if (config.method === "get" && data.errors.hasOwnProperty("id")) {
           history.push("/not-found");
         }
-        //This one is both for bad request and validation error so we need to check data.errors
+        //This one is both for bad request and validation error 
+        //so we need to check data.errors
         if (data.errors) {
           const modalStateErrors = [];
           for (const key in data.errors) {
@@ -44,7 +45,8 @@ axios.interceptors.response.use(
         toast.error("unauthorized");
         break;
       case 404:
-        //agent.ts is not a component, but we need to redirect to url /not-found in case of 404 error
+        //agent.ts is not a component, but we need to redirect to
+        // url /not-found in case of 404 error
         history.push("/not-found");
         break;
       case 500:

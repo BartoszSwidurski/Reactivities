@@ -6,7 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import "semantic-ui-css/semantic.min.css";
 import { StoreContext, store } from "./app/stores/store";
 import { Router } from "react-router-dom";
-// import "react-calendar/dist/Calendar.css";
+import "react-datepicker/dist/react-datepicker.css";
 //from react router-dom
 import { createBrowserHistory } from "history";
 

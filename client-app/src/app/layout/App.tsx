@@ -17,7 +17,6 @@ function App() {
   return (
     <>
       <ToastContainer position="bottom-right" />
-      {/* Anything above container is alway */}
       <Route exact path="/" component={HomePage} />
       <Route
         // every path that matches / plus any
